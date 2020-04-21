@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     setWarehouse() {
-      this.$router.push({ path: "/assginFilter" });
+      this.$router.push({ path: "/Role" });
     },
   },
 };

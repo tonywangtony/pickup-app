@@ -1,8 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Pickup from "../pages/Pickup";
+import Pickup from "../pages/Pickup/Pickup";
 import Login from "../pages/Login";
-import Assgin from "../pages/Assgin";
+import Assgin from "../pages/Assgin/Assgin";
 import AssginFilter from "../pages/AssginFilter";
 import Warehouse from "../pages/Warehouse";
 import Role from "../pages/Role";
@@ -16,6 +16,11 @@ Vue.use(VueRouter);
 
 export default new VueRouter({
   routes: [
+    {
+      path: "/",
+      name: "Login",
+      component: Login,
+    },
     {
       path: "/login",
       name: "Login",

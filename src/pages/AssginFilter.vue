@@ -4,10 +4,10 @@
       <v-subheader>
         <div class="subtitle-1">Type 1</div>
         <v-btn small color="primary" class="ml-5" @click="selectAll()">
-          全选
+          Select all
         </v-btn>
         <v-btn small color="primary" class="ml-5" @click="cancelAll()">
-          取消选择
+          Cancel all
         </v-btn>
       </v-subheader>
       <v-list-item-group multiple>
