@@ -1,77 +1,117 @@
 <template>
-  <v-container fluid>
-    <v-btn small depressed color="success" class="mr-1">
-      <v-icon small left>fas fa-check-circle</v-icon> 完成
-    </v-btn>
-    <v-btn small depressed color="error">
-      <v-icon small left>fas fa-exclamation</v-icon> 异常报告
-    </v-btn>
-    <v-tabs class="mt-1">
-      <v-tab>待完成</v-tab>
-      <v-tab>已完成</v-tab>
-      <v-tab>全部</v-tab>
-    </v-tabs>
-    <v-card-title>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="搜索"
-        single-line
-        hide-details
-        dense
-      ></v-text-field>
-    </v-card-title>
+  <v-row no-gutters>
     <v-data-table
       v-model="selected"
       :headers="headers"
       :items="desserts"
-      item-key="name"
+      item-key="index"
       :search="search"
       show-select
       hide-default-footer
     >
+      <div slot="headers">
+        <th>
+          <div>Foo</div>
+          <div>Bar</div>
+        </th>
+      </div>
+      <template v-slot:body="{ items }">
+        <tbody>
+          <tr v-for="item in items" :key="item.id">
+            <td>
+              <v-checkbox
+                v-if="item.index <= 3"
+                v-model="isTrue"
+                readonly
+              ></v-checkbox>
+              <v-checkbox
+                v-if="item.index > 3"
+                v-model="isFalse"
+                readonly
+              ></v-checkbox>
+            </td>
+            <td>{{ item.index }}</td>
+            <td>{{ item.driver }}</td>
+            <td>{{ item.stops }}</td>
+            <td>{{ item.item1 }}</td>
+            <td>{{ item.item2 }}</td>
+            <td>{{ item.item3 }}</td>
+            <td>{{ item.item4 }}</td>
+          </tr>
+          <tr>
+            <th colspan="3">Summary</th>
+            <th>8</th>
+            <th>7</th>
+            <th>13</th>
+            <th>3</th>
+            <th>11</th>
+          </tr>
+        </tbody>
+      </template>
     </v-data-table>
-  </v-container>
+  </v-row>
 </template>
 
 <script>
 export default {
-  name: "Pickup",
+  name: "All",
+  props: {
+    value: {
+      type: String,
+    },
+  },
+  watch: {
+    value(newVal) {
+      this.search = newVal;
+    },
+  },
   data() {
     return {
+      isTrue: true,
+      isFalse: false,
       selected: [],
       search: "",
       headers: [
         {
-          text: "司机",
-          value: "driver",
-          width: 100,
+          text: "Index",
+          value: "index",
+          width: 30,
         },
         {
-          text: "站数",
+          text: "Driver name",
+          value: "driver",
+          width: 50,
+        },
+        {
+          text: "Stops",
           value: "stops",
-          width: 100,
+          width: 30,
         },
         {
           text: "10010654 Game Hen·Patti·0824 <24oz>·24HD·白皮童子雞",
           value: "item1",
+          width: 50,
         },
         {
           text: "10010026PC PC-Stewing Hen·BB··(#1.5-#2.2)1HD·老雞",
           value: "item2",
+          width: 50,
         },
         {
           text: "10010484PC PC-Kui Fei Pullets··105·1HD·貴妃雞",
           value: "item3",
+          width: 50,
         },
         {
           text: "10011528PC PC-Rooster Brown··2003·1HD·三黃公雞",
           value: "item4",
+          width: 50,
         },
       ],
       desserts: [
         {
-          driver: "1200EGM",
+          index: 1,
+          driver: "1200AAA",
           stops: "#1",
           item1: 2,
           item2: 5,
@@ -79,7 +119,8 @@ export default {
           item4: "",
         },
         {
-          driver: "1200TAF",
+          index: 2,
+          driver: "1200BBB",
           stops: "#15",
           item1: "",
           item2: 3,
@@ -87,7 +128,8 @@ export default {
           item4: 1,
         },
         {
-          driver: "1200ABC",
+          index: 3,
+          driver: "1200CCC",
           stops: "#3",
           item1: "",
           item2: "",
@@ -95,7 +137,8 @@ export default {
           item4: 3,
         },
         {
-          driver: "1200FBH",
+          index: 4,
+          driver: "1200DDD",
           stops: "#12",
           item1: "",
           item2: 1,
@@ -103,7 +146,8 @@ export default {
           item4: "",
         },
         {
-          driver: "1200SVT",
+          index: 5,
+          driver: "1200EEE",
           stops: "#2",
           item1: 1,
           item2: "",
@@ -111,7 +155,8 @@ export default {
           item4: "",
         },
         {
-          driver: "1200WYV",
+          index: 6,
+          driver: "1200EGM",
           stops: "#22",
           item1: "",
           item2: "2",
@@ -119,7 +164,8 @@ export default {
           item4: "3",
         },
         {
-          driver: "1200BBS",
+          index: 7,
+          driver: "1200FFF",
           stops: "#2",
           item1: "3",
           item2: "2",
@@ -127,7 +173,8 @@ export default {
           item4: "2",
         },
         {
-          driver: "1200PIN",
+          index: 8,
+          driver: "1200GGG",
           stops: "#8",
           item1: "1",
           item2: "",
