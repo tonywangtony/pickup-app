@@ -13,7 +13,7 @@
           <td>{{ item.id }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.um }}</td>
-          <td>{{ item.subtotal }}</td>
+          <td>{{ item.subtotal }} / {{ item.subtotal }}</td>
           <td>{{ item.assignee }}</td>
         </tr>
       </tbody>
@@ -53,7 +53,7 @@ export default {
   computed: {
     products() {
       return this.$store.state.products.all.filter(
-        (product) => product.status == 2
+        (product) => product.status == 2 || product.status == 3
       );
     },
   },

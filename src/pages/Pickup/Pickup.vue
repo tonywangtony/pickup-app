@@ -1,24 +1,29 @@
 <template>
   <v-container fluid>
-    <v-row class="ml-5">
-      <span class="mr-10">Drivers: 3/8</span>
-      <span class="mr-10">Items: 0/4</span>
+    <v-row no-gutters class="mb-2 mt-2">
+      <v-row no-gutters>
+        <v-btn class="mr-5" small @click="start">Start</v-btn>
+        <v-btn small @click="finish">Finish</v-btn>
+      </v-row>
+      <v-row no-gutters justify="end">
+        <span class="mr-5">Item: 0/x</span>
+        <span>Driver: 0/x</span>
+      </v-row>
     </v-row>
     <v-tabs class="mt-1">
-      <v-tab @click="activeTab = 1;search=''">Pending(4)</v-tab>
-      <v-tab @click="activeTab = 2;search=''">Completed(4)</v-tab>
-      <v-tab @click="activeTab = 3;search=''">All(8)</v-tab>
+      <v-tab @click="switchTab(1)">Pending({{ pendingCount }})</v-tab>
+      <v-tab @click="switchTab(2)">Completed({{ completedCount }})</v-tab>
+      <v-tab @click="switchTab(3)">All({{ allCount }})</v-tab>
     </v-tabs>
-    <v-card-title>
+    <v-row no-gutters class="mb-2">
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
         label="Search"
         single-line
         hide-details
-        dense
       ></v-text-field>
-    </v-card-title>
+    </v-row>
     <!-- tables -->
     <Pending v-if="activeTab == 1" v-model="search"></Pending>
     <Completed v-if="activeTab == 2" v-model="search"></Completed>
@@ -41,9 +46,35 @@ export default {
   data() {
     return {
       activeTab: 1,
-      selected: [],
       search: "",
     };
+  },
+  methods: {
+    switchTab(id) {
+      this.activeTab = id;
+      this.search = "";
+    },
+    start() {
+      this.$store.dispatch("products/inProgress");
+    },
+    finish() {
+      this.$store.dispatch("user/done");
+    },
+  },
+  computed: {
+    pendingCount() {
+      return this.$store.state.user.todos.filter(
+        (product) => product.status === 2
+      ).length;
+    },
+    completedCount() {
+      return this.$store.state.user.todos.filter(
+        (product) => product.status === 3
+      ).length;
+    },
+    allCount() {
+      return this.$store.state.user.todos.length;
+    },
   },
 };
 </script>

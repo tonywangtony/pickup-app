@@ -26,6 +26,8 @@
           :label="'save username and password'"
         ></v-checkbox>
         <v-btn color="primary" block @click="login">Login</v-btn>
+        <v-btn color="primary" block @click="set">set</v-btn>
+        <v-btn color="primary" block @click="get">get</v-btn>
       </v-form>
     </v-row>
   </v-container>
@@ -45,6 +47,13 @@ export default {
     login() {
       this.$router.push({ path: "/assginFilter" });
     },
+    set() {
+      this.$store.commit('products/increment');
+    },
+    get() {
+      const data = this.$store.state.products.all;
+      console.log(data);
+    }
   },
 };
 </script>

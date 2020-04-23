@@ -119,7 +119,11 @@ export default {
     },
     assign() {
       this.staffSheet = false;
-      this.$refs.pending.assign("TOM.L");
+      if (this.$store.state.user.ing) {
+        alert("TOM.L 不能接收分配");
+      } else {
+        this.$refs.pending.assign("TOM.L");
+      }
     },
     unassign() {
       this.$refs.assigned.unassign();
@@ -139,12 +143,12 @@ export default {
     },
     assignedCount() {
       return this.$store.state.products.all.filter(
-        (product) => product.assignee !== ""
+        (product) => product.status === 1 || product.status === 2
       ).length;
     },
     completedCount() {
       return this.$store.state.products.all.filter(
-        (product) => product.status === 2
+        (product) => product.status === 3
       ).length;
     },
     allCount() {

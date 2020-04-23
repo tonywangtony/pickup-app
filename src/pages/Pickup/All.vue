@@ -1,60 +1,50 @@
 <template>
-  <v-row no-gutters>
-    <v-data-table
-      v-model="selected"
-      :headers="headers"
-      :items="desserts"
-      item-key="index"
-      :search="search"
-      show-select
-      hide-default-footer
-    >
-      <div slot="headers">
-        <th>
-          <div>Foo</div>
-          <div>Bar</div>
-        </th>
-      </div>
-      <template v-slot:body="{ items }">
-        <tbody>
-          <tr v-for="item in items" :key="item.id">
-            <td>
-              <v-checkbox
-                v-if="item.index <= 3"
-                v-model="isTrue"
-                readonly
-              ></v-checkbox>
-              <v-checkbox
-                v-if="item.index > 3"
-                v-model="isFalse"
-                readonly
-              ></v-checkbox>
-            </td>
-            <td>{{ item.index }}</td>
-            <td>{{ item.driver }}</td>
-            <td>{{ item.stops }}</td>
-            <td>{{ item.item1 }}</td>
-            <td>{{ item.item2 }}</td>
-            <td>{{ item.item3 }}</td>
-            <td>{{ item.item4 }}</td>
-          </tr>
-          <tr>
-            <th colspan="3">Summary</th>
-            <th>8</th>
-            <th>7</th>
-            <th>13</th>
-            <th>3</th>
-            <th>11</th>
-          </tr>
-        </tbody>
-      </template>
-    </v-data-table>
-  </v-row>
+  <v-data-table
+    :headers="headers"
+    :items="products"
+    item-key="index"
+    :search="search"
+    hide-default-footer
+  >
+    <div slot="headers">
+      <th>
+        <div>Foo</div>
+        <div>Bar</div>
+      </th>
+    </div>
+    <template v-slot:body="{ items }">
+      <tbody>
+        <tr v-for="(item, key) in items" :key="item.driverName">
+          <td></td>
+          <td>{{ key + 1 }}</td>
+          <td>{{ item.driverName }}</td>
+          <td>{{ item.stops }}</td>
+          <td>{{ item.item0 }}</td>
+          <td>{{ item.item1 }}</td>
+          <td>{{ item.item2 }}</td>
+          <td>{{ item.item3 }}</td>
+        </tr>
+        <tr>
+          <th colspan="4">Subtotal</th>
+          <th>X</th>
+          <th>X</th>
+          <th>X</th>
+          <th>X</th>
+        </tr>
+      </tbody>
+    </template>
+  </v-data-table>
 </template>
 
 <script>
 export default {
   name: "All",
+  data() {
+    return {
+      search: "",
+      isTrue: true,
+    };
+  },
   props: {
     value: {
       type: String,
@@ -65,124 +55,50 @@ export default {
       this.search = newVal;
     },
   },
-  data() {
-    return {
-      isTrue: true,
-      isFalse: false,
-      selected: [],
-      search: "",
-      headers: [
-        {
-          text: "Index",
-          value: "index",
-          width: 30,
-        },
-        {
-          text: "Driver name",
-          value: "driver",
-          width: 50,
-        },
-        {
-          text: "Stops",
-          value: "stops",
-          width: 30,
-        },
-        {
-          text: "10010654 Game Hen·Patti·0824 <24oz>·24HD·白皮童子雞",
-          value: "item1",
-          width: 50,
-        },
-        {
-          text: "10010026PC PC-Stewing Hen·BB··(#1.5-#2.2)1HD·老雞",
-          value: "item2",
-          width: 50,
-        },
-        {
-          text: "10010484PC PC-Kui Fei Pullets··105·1HD·貴妃雞",
-          value: "item3",
-          width: 50,
-        },
-        {
-          text: "10011528PC PC-Rooster Brown··2003·1HD·三黃公雞",
-          value: "item4",
-          width: 50,
-        },
-      ],
-      desserts: [
-        {
-          index: 1,
-          driver: "1200AAA",
-          stops: "#1",
-          item1: 2,
-          item2: 5,
-          item3: 2,
-          item4: "",
-        },
-        {
-          index: 2,
-          driver: "1200BBB",
-          stops: "#15",
-          item1: "",
-          item2: 3,
-          item3: "",
-          item4: 1,
-        },
-        {
-          index: 3,
-          driver: "1200CCC",
-          stops: "#3",
-          item1: "",
-          item2: "",
-          item3: "",
-          item4: 3,
-        },
-        {
-          index: 4,
-          driver: "1200DDD",
-          stops: "#12",
-          item1: "",
-          item2: 1,
-          item3: "",
-          item4: "",
-        },
-        {
-          index: 5,
-          driver: "1200EEE",
-          stops: "#2",
-          item1: 1,
-          item2: "",
-          item3: "",
-          item4: "",
-        },
-        {
-          index: 6,
-          driver: "1200EGM",
-          stops: "#22",
-          item1: "",
-          item2: "2",
-          item3: "1",
-          item4: "3",
-        },
-        {
-          index: 7,
-          driver: "1200FFF",
-          stops: "#2",
-          item1: "3",
-          item2: "2",
-          item3: "3",
-          item4: "2",
-        },
-        {
-          index: 8,
-          driver: "1200GGG",
-          stops: "#8",
-          item1: "1",
-          item2: "",
-          item3: "",
-          item4: "2",
-        },
-      ],
-    };
+  methods: {},
+  computed: {
+    headers() {
+      let baseHeaders = [
+        { text: "", value: null, sortable: false, width: 20 },
+        { text: "Index", value: null, sortable: false, width: 20 },
+        { text: "Driver", value: "driverName", width: 20 },
+        { text: "Stops", value: "stops", width: 20 },
+      ];
+      this.$store.state.user.todos.forEach((todo, key) => {
+        baseHeaders.push({
+          text: todo.name,
+          value: "item" + key,
+          width: 100,
+        });
+      });
+      const count = this.$store.state.user.todos.length;
+      for (let index = count; index <= 3; index++) {
+        baseHeaders.push({
+          text: "",
+          value: "item" + index,
+          sortable: false,
+          width: 100,
+        });
+      }
+      return baseHeaders;
+    },
+    products() {
+      let products = [];
+      this.$store.state.user.todos.forEach((todo, key) => {
+        if (todo.status === 3) {
+          todo.items.forEach((item) => {
+            const itemKey = "item" + key;
+            let tempData = [];
+            tempData.id = todo.id;
+            tempData.driverName = item.driverName;
+            tempData.stops = item.stops;
+            tempData[itemKey] = item.qty;
+            products.push(tempData);
+          });
+        }
+      });
+      return products;
+    },
   },
 };
 </script>

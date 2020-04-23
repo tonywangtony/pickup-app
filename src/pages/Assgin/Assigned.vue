@@ -8,13 +8,17 @@
   >
     <template v-slot:body="{ items }">
       <tbody>
-        <tr v-for="item in items" :key="item.id">
+        <tr
+          :class="item.status === 2 ? 'yellow' : ''"
+          v-for="item in items"
+          :key="item.id"
+        >
           <td><v-checkbox v-model="selected" :value="item.id"></v-checkbox></td>
           <td>{{ item.index }}</td>
           <td>{{ item.id }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.um }}</td>
-          <td>{{ item.subtotal }}</td>
+          <td>0 / {{ item.subtotal }}</td>
           <td>{{ item.assignee }}</td>
         </tr>
       </tbody>
@@ -62,7 +66,7 @@ export default {
   computed: {
     products() {
       return this.$store.state.products.all.filter(
-        (product) => product.assignee !== ""
+        (product) => product.status === 1 || product.status === 2
       );
     },
   },
