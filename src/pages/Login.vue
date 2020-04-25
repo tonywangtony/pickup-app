@@ -26,8 +26,8 @@
           :label="'save username and password'"
         ></v-checkbox>
         <v-btn color="primary" block @click="login">Login</v-btn>
-        <v-btn color="primary" block @click="set">set</v-btn>
-        <v-btn color="primary" block @click="get">get</v-btn>
+        <!-- <v-btn color="primary" block @click="set">set</v-btn> -->
+        <!-- <v-btn color="primary" block @click="get">get</v-btn> -->
       </v-form>
     </v-row>
   </v-container>
