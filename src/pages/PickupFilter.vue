@@ -16,9 +16,9 @@
       ></v-autocomplete>
     </v-card-text>
     <v-row class="pt-1">
-      <v-col>
+      <!-- <v-col>
         <v-btn color="primary" :disabled="selected.length == 0" block @click="view()">View</v-btn>
-      </v-col>
+      </v-col> -->
       <v-col>
         <v-btn color="primary" :disabled="selected.length == 0" block @click="viewAndStart()">View and Start</v-btn>
       </v-col>
@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     products() {
-      let products = this.$store.state.products.assigns.filter((item) => item.status === 0);
+      let products = this.$store.state.products.assigns.filter((item) => item.status === 1);
       products.map((product) => {
         product.text = `${product.id} - ${product.name}`;
         return product;

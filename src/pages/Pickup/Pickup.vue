@@ -6,9 +6,37 @@
         <v-btn small @click="finish">Finish</v-btn>
       </v-row>
     </v-row>
+    <v-tabs class="mt-1">
+      <v-tab>Pending(X)</v-tab>
+      <v-tab>Completed(X)</v-tab>
+      <v-tab>All(X)</v-tab>
+    </v-tabs>
     <!-- tables -->
-    <v-data-table :headers="headers" :items="desserts" hide-default-footer disable-sort></v-data-table>
-    <v-data-table class="mt-5" :headers="headers2" :items="desserts2" hide-default-footer hide-default-header></v-data-table>
+    <v-data-table :headers="headers" :items="desserts" item-key="index" hide-default-footer>
+      <template v-slot:body="{ items }">
+        <tbody>
+          <tr v-for="(item, key) in items" :key="item.key">
+            <td>
+              <v-checkbox readonly v-model="isFalse"></v-checkbox>
+            </td>
+            <td>{{ key + 1 }}</td>
+            <td>{{ item.driverName }}</td>
+            <td>{{ item.stops }}</td>
+            <td @click="item.bg1 = !item.bg1" :class="{error:item.bg1}">{{ item.item0 }}</td>
+            <td @click="item.bg2 = !item.bg2" :class="{error:item.bg2}">{{ item.item1 }}</td>
+            <td @click="item.bg3 = !item.bg3" :class="{error:item.bg3}">{{ item.item2 }}</td>
+            <td @click="item.bg4 = !item.bg4" :class="{error:item.bg4}">{{ item.item3 }}</td>
+          </tr>
+          <tr>
+            <th colspan="4">Subtotal</th>
+            <th>X</th>
+            <th>X</th>
+            <th>X</th>
+            <th>X</th>
+          </tr>
+        </tbody>
+      </template>
+    </v-data-table>
   </v-container>
 </template>
 
@@ -17,86 +45,19 @@ export default {
   name: "Pickup",
   components: {},
   created: function() {
-    console.log(this.$route.params.selected);
-    console.log(this.$route.params.isStart);
+    if (this.$route.params.selected !== undefined) {
+      this.$store.state.products.assigns.forEach(product => {
+        if (this.$route.params.selected.includes(product.id)) {
+          this.products.push(product);
+        }
+      });
+    }
   },
   data() {
     return {
+      products: [],
       selectd: [],
-      headers: [
-        { text: "Item Code", value: "id" },
-        { text: "Description", value: "name" },
-        { text: "U/M", value: "um" },
-        { text: "Subtotal", value: "subtotal" },
-        { text: "On-hand", value: "onhand" },
-      ],
-      desserts: [
-        {
-          id: "10010026PC",
-          name: "PC-Stewing Hen BB (#1.5-#2.2)1HD 老鸡10010",
-          um: "EA",
-          subtotal: "14.00",
-          onhand: "317.00",
-        },
-      ],
-      headers2: [
-        { text: "checkbox", value: "checkbox" },
-        { text: "name", value: "name" },
-        { text: "stops", value: "stops" },
-        { text: "index", value: "index" },
-        { text: "total", value: "total" },
-        { text: "comment", value: "comment" },
-      ],
-      desserts2: [
-        {
-          checkbox: false,
-          name: "1200JI",
-          stops: "【#20】",
-          index: "1",
-          total: "2.00",
-          comment: "Monica Kwan978",
-        },
-        {
-          checkbox: false,
-          name: "1200JI",
-          stops: "【#22】",
-          index: "2",
-          total: "2.00",
-          comment: "Lulu",
-        },
-        {
-          checkbox: false,
-          name: "1200JI",
-          stops: "【#31】",
-          index: "3",
-          total: "2.00",
-          comment: "Ying Tang 108",
-        },
-        {
-          checkbox: false,
-          name: "1200SW",
-          stops: "【#26】",
-          index: "4",
-          total: "2.00",
-          comment: "Zhicheng Xu108",
-        },
-        {
-          checkbox: false,
-          name: "1200SW",
-          stops: "【#40】",
-          index: "5",
-          total: "4.00",
-          comment: "Jody Wang",
-        },
-        {
-          checkbox: false,
-          name: "1200TAA",
-          stops: "【#6】",
-          index: "6",
-          total: "2.00",
-          comment: "Guojin SHEN",
-        },
-      ],
+      isFalse: false
     };
   },
   methods: {
@@ -105,8 +66,55 @@ export default {
     },
     finish() {
       //
-    },
+    }
   },
-  computed: {},
+  computed: {
+    headers() {
+      let baseHeaders = [
+        { text: "", value: null, sortable: false, width: 20 },
+        { text: "Index", value: null, sortable: false, width: 20 },
+        { text: "Driver", value: "driverName", width: 20 },
+        { text: "Stops", value: "stops", width: 20 }
+      ];
+      this.products.forEach((product, key) => {
+        baseHeaders.push({
+          text: product.name,
+          value: "item" + key,
+          width: 100
+        });
+      });
+      for (let index = this.products.length; index <= 3; index++) {
+        baseHeaders.push({
+          text: "",
+          value: "item" + index,
+          sortable: false,
+          width: 20
+        });
+      }
+      return baseHeaders;
+    },
+    desserts() {
+      let todos = [];
+      this.products.forEach((product, key) => {
+        product.drivers.forEach((driver, driverKey) => {
+          const itemKey = "item" + key;
+          let tempData = new Object();
+          tempData.key = `${key}-${driverKey}`;
+          tempData.id = product.id;
+          tempData.driverName = driver.name;
+          tempData.stops = driver.stop;
+          tempData[itemKey] = driver.qty;
+          tempData.bg1 = false;
+          tempData.bg2 = false;
+          tempData.bg3 = false;
+          tempData.bg4 = false;
+          todos.push(tempData);
+        });
+      });
+      console.log(todos);
+
+      return todos;
+    }
+  }
 };
 </script>
