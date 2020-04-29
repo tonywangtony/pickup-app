@@ -1,136 +1,116 @@
 const state = {
-  all: [
+  assigns: [
     {
       index: "1",
-      id: "10010385",
-      name: "Game Hen·Patti·0824 <24oz>·24HD·白皮童子雞",
-      um: "CS",
-      subtotal: 6,
-      assignee: "",
-      todayPo: "",
-      onhand: "",
+      id: "10010019PC",
+      name: "PC-Roaster Paws·Perdue··(#10.5-#11)·鳳爪6129",
+      um: "PC",
+      subtotal: 1,
+      onhand: 112,
       status: 0, // 0待分配 1已分配 2待完成 3已完成
-      items: [{ driverName: "1200AAA", stops: 3, qty: "6" }],
+      assignee: "",
+      drivers: [{ name: "1200HB", box: "#36", stop: 1, qty: 1, consignee: "Ling" }],
     },
     {
       index: "2",
-      id: "10010965",
-      name: "Whole Young Chix·PG·112939·CW·細雞仔",
-      um: "CS",
-      subtotal: 13,
-      assignee: "",
-      todayPo: "50837289",
-      onhand: "452.00",
+      id: "10010026PC",
+      name: "PC-Stewing Hen·BB··(#1.5-#2.2)1HD·老雞10010",
+      um: "EA",
+      subtotal: 14,
+      onhand: 317,
       status: 0,
-      items: [{ driverName: "1200BBB", stops: 4, qty: "13" }],
+      assignee: "",
+      drivers: [
+        { name: "1200JI", box: "#20", stop: 1, qty: 2, consignee: "Monica Kwan978" },
+        { name: "1200JI", box: "#22", stop: 2, qty: 2, consignee: "Lulu" },
+        { name: "1200JI", box: "#31", stop: 3, qty: 2, consignee: "Ying Tang 108" },
+        { name: "1200SW", box: "#26", stop: 4, qty: 2, consignee: "Zhicheng Xu108" },
+        { name: "1200SW", box: "#40", stop: 5, qty: 4, consignee: "Jody Wang" },
+        { name: "1200TAA", box: "#6", stop: 6, qty: 2, consignee: "Guojin SHEN" },
+      ],
     },
     {
       index: "3",
-      id: "10010026PC",
-      name: "Chix Bone Frames·Pitman·60019·#40·雞胸骨",
+      id: "10010040PC",
+      name: "PC-Thighs (B/In)·Perdue·647·(#4-5)·帶骨上脾647/1647，(T/P), Chef Choice",
       um: "PC",
-      subtotal: 2,
-      assignee: "",
-      todayPo: "",
-      onhand: "",
+      subtotal: 3,
+      onhand: 75,
       status: 0,
-      items: [{ driverName: "1200CCC", stops: 13, qty: "2" }],
+      assignee: "",
+      drivers: [{ name: "1200HB", box: "#5", stop: 1, qty: 3, consignee: "May Guo" }],
     },
     {
       index: "4",
       id: "10010114PC",
-      name: "PC-Breast Mt·Mountaire·25630·#10·雞胸肉",
+      name: "PC-Breast Mt·Mountaire·25630·#10·雞胸肉<BLUELABEL>,Butterflies",
       um: "PC",
-      subtotal: 12,
-      assignee: "",
-      todayPo: "",
-      onhand: "",
+      subtotal: 4,
+      onhand: 125,
       status: 0,
-      items: [{ driverName: "1200DDD", stops: 4, qty: "12" }],
+      assignee: "",
+      drivers: [
+        { name: "1200HB", box: "#13", stop: 1, qty: 1, consignee: "Catherine+员工号108" },
+        { name: "1200HB", box: "#16", stop: 2, qty: 1, consignee: "Alisha Lu" },
+        { name: "1200RW", box: "#22", stop: 3, qty: 1, consignee: "Ivy 108" },
+        { name: "1200XL", box: "#33", stop: 4, qty: 1, consignee: "Jiayin Liang 157" },
+      ],
     },
     {
       index: "5",
-      id: "10011295",
-      name: "Thighs (B/In)·Perdue·623·#40·帶骨上脾",
+      id: "10010164PC",
+      name: "PC-Midjoint Wing·Agro·<IQF>·#10·雞中翼Agrosuper,(15%Solution,MJ Wing)",
       um: "PC",
-      subtotal: 17,
-      assignee: "",
-      todayPo: "",
-      onhand: "",
+      subtotal: 2,
+      onhand: 47,
       status: 0,
-      items: [{ driverName: "1200EEE", stops: 3, qty: "17" }],
+      assignee: "",
+      drivers: [
+        { name: "1200JI", box: "#23", stop: 1, qty: 1, consignee: "Hongxia Tan157" },
+        { name: "1200XL", box: "#6", stop: 2, qty: 1, consignee: "5103586026" },
+      ],
     },
     {
       index: "6",
-      id: "10011595PC",
-      name: "PC-Thighs (B/In)·S&J··(#4.5-5)·帶骨上脾",
-      um: "PC",
-      subtotal: 15,
-      assignee: "",
-      todayPo: "",
-      onhand: "",
+      id: "10010235PC",
+      name: "PC-Game Hen·Patti·0824 <24oz>·1HD·白皮童子雞Patti Jean",
+      um: "EA",
+      subtotal: 6,
+      onhand: 379,
       status: 0,
-      items: [{ driverName: "1200FFF", stops: 1, qty: "15" }],
+      assignee: "",
+      drivers: [
+        { name: "1200CH", box: "#17", stop: 1, qty: 3, consignee: "Qixu Chen" },
+        { name: "1200TAA", box: "#2", stop: 2, qty: 3, consignee: "Linda Li 157" },
+      ],
     },
   ],
+  pickups: [],
 };
 
 // getters
 const getters = {};
 
 // actions
-const actions = {
-  inProgress({ state, commit }) {
-    state.all.map((item) => {
-      if (item.status === 1) {
-        commit("user/add", item, { root: true });
-      }
-    });
-    commit("inProgress");
-  },
-  completed({ commit }, data) {
-    commit("user/done", data, { root: true });
-    commit("completed", data);
-  },
-};
+const actions = {};
 
 // mutations
 const mutations = {
   // 分配
-  assign(state, data) {
-    if (data.ids.length == 0) return;
-    state.all.map((item) => {
-      if (data.ids.includes(item.id)) {
-        item.assignee = data.username;
+  assign(state, ids) {
+    state.assigns.map((item) => {
+      if (ids.includes(item.id)) {
         item.status = 1;
       }
       return item;
     });
   },
   // 取消分配
-  unassign(state, data) {
-    if (data.ids.length == 0) return;
-    state.all.map((item) => {
-      if (data.ids.includes(item.id) && item.status === 1) {
-        item.assignee = "";
+  unassign(state, ids) {
+    state.assigns.map((item) => {
+      if (ids.includes(item.id)) {
         item.status = 0;
       }
-      return item;
-    });
-  },
-  // 进行中
-  inProgress(state) {
-    state.all.map((item) => {
-      if (item.status === 1) {
-        item.status = 2;
-      }
-      return item;
-    });
-  },
-  // 完成
-  completed(state, data) {
-    state.all.map((item) => {
-      if (item.id === data.id) item.status = 3;
       return item;
     });
   },

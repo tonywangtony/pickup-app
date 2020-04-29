@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Pickup from "../pages/Pickup/Pickup";
+import PickupFilter from "../pages/PickupFilter";
 import Login from "../pages/Login";
 import Assgin from "../pages/Assgin/Assgin";
 import AssginFilter from "../pages/AssginFilter";
@@ -38,17 +39,22 @@ export default new VueRouter({
     },
     {
       path: "/assginFilter",
-      name: "B Role Filter",
+      name: "assginFilter",
       component: AssginFilter,
     },
     {
       path: "/assgin",
-      name: "B Role",
+      name: "assgin",
       component: Assgin,
     },
     {
+      path: "/pickupFilter",
+      name: "pickupFilter",
+      component: PickupFilter,
+    },
+    {
       path: "/pickup",
-      name: "C Role",
+      name: "pickup",
       component: Pickup,
     },
   ],

@@ -30,7 +30,7 @@ export default {
       this.$router.push({ path: "/assginFilter" });
     },
     gotoPickupPage() {
-      this.$router.push({ path: "/pickup" });
+      this.$router.push({ path: "/pickupFilter" });
     },
     gotoWarehouse() {
       this.$router.push({ path: "/warehouse" });

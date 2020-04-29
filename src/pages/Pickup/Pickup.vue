@@ -5,76 +5,108 @@
         <v-btn class="mr-5" small @click="start">Start</v-btn>
         <v-btn small @click="finish">Finish</v-btn>
       </v-row>
-      <v-row no-gutters justify="end">
-        <span class="mr-5">Item: 0/x</span>
-        <span>Driver: 0/x</span>
-      </v-row>
-    </v-row>
-    <v-tabs class="mt-1">
-      <v-tab @click="switchTab(1)">Pending({{ pendingCount }})</v-tab>
-      <v-tab @click="switchTab(2)">Completed({{ completedCount }})</v-tab>
-      <v-tab @click="switchTab(3)">All({{ allCount }})</v-tab>
-    </v-tabs>
-    <v-row no-gutters class="mb-2">
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-      ></v-text-field>
     </v-row>
     <!-- tables -->
-    <Pending v-if="activeTab == 1" v-model="search"></Pending>
-    <Completed v-if="activeTab == 2" v-model="search"></Completed>
-    <All v-if="activeTab == 3" v-model="search"></All>
+    <v-data-table :headers="headers" :items="desserts" hide-default-footer disable-sort></v-data-table>
+    <v-data-table class="mt-5" :headers="headers2" :items="desserts2" hide-default-footer hide-default-header></v-data-table>
   </v-container>
 </template>
 
 <script>
-import Pending from "./Pending";
-import Completed from "./Completed";
-import All from "./All";
-
 export default {
   name: "Pickup",
-  components: {
-    Pending,
-    Completed,
-    All,
+  components: {},
+  created: function() {
+    console.log(this.$route.params.selected);
+    console.log(this.$route.params.isStart);
   },
   data() {
     return {
-      activeTab: 1,
-      search: "",
+      selectd: [],
+      headers: [
+        { text: "Item Code", value: "id" },
+        { text: "Description", value: "name" },
+        { text: "U/M", value: "um" },
+        { text: "Subtotal", value: "subtotal" },
+        { text: "On-hand", value: "onhand" },
+      ],
+      desserts: [
+        {
+          id: "10010026PC",
+          name: "PC-Stewing Hen BB (#1.5-#2.2)1HD 老鸡10010",
+          um: "EA",
+          subtotal: "14.00",
+          onhand: "317.00",
+        },
+      ],
+      headers2: [
+        { text: "checkbox", value: "checkbox" },
+        { text: "name", value: "name" },
+        { text: "stops", value: "stops" },
+        { text: "index", value: "index" },
+        { text: "total", value: "total" },
+        { text: "comment", value: "comment" },
+      ],
+      desserts2: [
+        {
+          checkbox: false,
+          name: "1200JI",
+          stops: "【#20】",
+          index: "1",
+          total: "2.00",
+          comment: "Monica Kwan978",
+        },
+        {
+          checkbox: false,
+          name: "1200JI",
+          stops: "【#22】",
+          index: "2",
+          total: "2.00",
+          comment: "Lulu",
+        },
+        {
+          checkbox: false,
+          name: "1200JI",
+          stops: "【#31】",
+          index: "3",
+          total: "2.00",
+          comment: "Ying Tang 108",
+        },
+        {
+          checkbox: false,
+          name: "1200SW",
+          stops: "【#26】",
+          index: "4",
+          total: "2.00",
+          comment: "Zhicheng Xu108",
+        },
+        {
+          checkbox: false,
+          name: "1200SW",
+          stops: "【#40】",
+          index: "5",
+          total: "4.00",
+          comment: "Jody Wang",
+        },
+        {
+          checkbox: false,
+          name: "1200TAA",
+          stops: "【#6】",
+          index: "6",
+          total: "2.00",
+          comment: "Guojin SHEN",
+        },
+      ],
     };
   },
   methods: {
-    switchTab(id) {
-      this.activeTab = id;
-      this.search = "";
-    },
     start() {
-      this.$store.dispatch("products/inProgress");
+      //
     },
     finish() {
-      this.$store.dispatch("user/done");
+      //
     },
   },
-  computed: {
-    pendingCount() {
-      return this.$store.state.user.todos.filter(
-        (product) => product.status === 2
-      ).length;
-    },
-    completedCount() {
-      return this.$store.state.user.todos.filter(
-        (product) => product.status === 3
-      ).length;
-    },
-    allCount() {
-      return this.$store.state.user.todos.length;
-    },
-  },
+  computed: {},
 };
 </script>

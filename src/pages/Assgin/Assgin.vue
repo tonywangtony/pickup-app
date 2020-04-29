@@ -1,30 +1,8 @@
 <template>
   <v-container fluid>
     <v-row justify="start">
-      <v-btn
-        small
-        color="primary"
-        class="ml-2"
-        @click="lock()"
-        :disabled="activeTab !== 1"
-        >Lock</v-btn
-      >
-      <v-btn
-        small
-        color="primary"
-        class="ml-2"
-        @click="unlock()"
-        :disabled="activeTab !== 2"
-        >Unlock</v-btn
-      >
-      <v-btn
-        small
-        color="primary"
-        class="ml-2"
-        @click="done()"
-        :disabled="activeTab !== 2"
-        >Done</v-btn
-      >
+      <v-btn small color="primary" class="ml-2" @click="assign()" :disabled="activeTab !== 1">Assign</v-btn>
+      <v-btn small color="primary" class="ml-2" @click="unassign()" :disabled="activeTab !== 2">Unassign</v-btn>
     </v-row>
     <v-row>
       <v-col>
@@ -38,46 +16,29 @@
     <v-row align="center">
       <v-col>
         <v-tabs class="mt-1" dense>
-          <v-tab @click="switchTab(1)"> Pool({{ pool.length }}) </v-tab>
-          <v-tab @click="switchTab(2)">Locked({{ locked.length }})</v-tab>
+          <v-tab @click="switchTab(1)">Pending({{ pending.length }}) </v-tab>
+          <v-tab @click="switchTab(2)">Assigned({{ assigned.length }})</v-tab>
           <v-tab @click="switchTab(3)">Completed({{ completed.length }})</v-tab>
           <v-tab @click="switchTab(4)">All({{ all.length }})</v-tab>
         </v-tabs>
       </v-col>
       <v-col>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-          dense
-        ></v-text-field>
+        <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details dense></v-text-field>
       </v-col>
     </v-row>
     <!-- tables -->
-    <v-data-table
-      :headers="headers"
-      :items="productsFilter"
-      :search="search"
-      hide-default-footer
-    >
-      <template v-slot:body="{ items }">
-        <tbody>
-          <tr v-for="item in items" :key="item.id">
-            <td>
-              <v-checkbox v-model="selected" :value="item.id"></v-checkbox>
-            </td>
-            <td>{{ item.index }}</td>
-            <td>{{ item.id }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.um }}</td>
-            <td>{{ item.subtotal }}</td>
-            <td>{{ item.assignee }}</td>
-          </tr>
-        </tbody>
+    <v-data-table :headers="tableHeader" :items="tableData" :search="search" hide-default-footer>
+      <template v-slot:item.checkbox="{ item }">
+        <v-checkbox v-model="selected" :value="item.id"></v-checkbox>
       </template>
     </v-data-table>
+    <!-- alert -->
+    <v-snackbar v-model="snackbar" :timeout="5000" :top="true" color="error">
+      物料已进行执货，无法取消分配，请线下沟通！
+      <v-btn text @click="snackbar = false">
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -90,64 +51,7 @@ export default {
       activeTab: 1,
       search: "",
       selected: [],
-      headers: [
-        { text: "", value: "null", sortable: false },
-        { text: "Index", value: "index" },
-        { text: "Item", value: "id" },
-        { text: "Description", value: "name" },
-        { text: "U/M", value: "um" },
-        { text: "Subtotal", value: "subtotal" },
-      ],
-      products: [
-        {
-          index: 1,
-          id: "10010385",
-          name: "Game Hen·Patti·0824 <24oz>·24HD·白皮童子雞",
-          um: "CS",
-          subtotal: 6,
-          status: 0,
-        },
-        {
-          index: 2,
-          id: "10010965",
-          name: "Whole Young Chix·PG·112939·CW·細雞仔",
-          um: "CS",
-          subtotal: 13,
-          status: 0,
-        },
-        {
-          index: 3,
-          id: "10010026PC",
-          name: "Chix Bone Frames·Pitman·60019·#40·雞胸骨",
-          um: "PC",
-          subtotal: 2,
-          status: 0,
-        },
-        {
-          index: 4,
-          id: "10010114PC",
-          name: "PC-Breast Mt·Mountaire·25630·#10·雞胸肉",
-          um: "PC",
-          subtotal: 12,
-          status: 0,
-        },
-        {
-          index: 5,
-          id: "10011295",
-          name: "Thighs (B/In)·Perdue·623·#40·帶骨上脾",
-          um: "PC",
-          subtotal: 17,
-          status: 0,
-        },
-        {
-          index: 6,
-          id: "10011595PC",
-          name: "PC-Thighs (B/In)·S&J··(#4.5-5)·帶骨上脾",
-          um: "PC",
-          subtotal: 15,
-          status: 0,
-        },
-      ],
+      snackbar: false,
     };
   },
   methods: {
@@ -156,29 +60,19 @@ export default {
       this.search = "";
       this.selected = [];
     },
-    lock() {
-      this.products.map((product) => {
-        if (this.selected.includes(product.id)) {
-          product.status = 1;
-        }
-        return product;
-      });
+    assign() {
+      this.$store.commit("products/assign", this.selected);
     },
-    unlock() {
-      this.products.map((product) => {
-        if (this.selected.includes(product.id)) {
-          product.status = 0;
-        }
-        return product;
+    unassign() {
+      let checkRes = true;
+      this.$store.state.products.assigns.forEach((item) => {
+        if (this.selected.includes(item.id) && item.assignee !== "") checkRes = false;
       });
-    },
-    done() {
-      this.products.map((product) => {
-        if (this.selected.includes(product.id)) {
-          product.status = 2;
-        }
-        return product;
-      });
+      if (checkRes) {
+        this.$store.commit("products/unassign", this.selected);
+      } else {
+        this.snackbar = true;
+      }
     },
   },
   computed: {
@@ -188,28 +82,71 @@ export default {
     types2() {
       return this.$store.state.productType.types2;
     },
-    pool() {
-      return this.products.filter((item) => item.status === 0);
+    pending() {
+      return this.$store.state.products.assigns.filter((item) => item.status === 0);
     },
-    locked() {
-      return this.products.filter((item) => item.status === 1);
+    assigned() {
+      return this.$store.state.products.assigns.filter((item) => item.status === 1);
     },
     completed() {
-      return this.products.filter((item) => item.status === 2);
+      return this.$store.state.products.assigns.filter((item) => item.status === 2);
     },
     all() {
-      return this.products;
+      return this.$store.state.products.assigns;
     },
-    productsFilter() {
+    tableData() {
       switch (this.activeTab) {
         case 1:
-          return this.products.filter((item) => item.status === 0);
+          return this.pending;
         case 2:
-          return this.products.filter((item) => item.status === 1);
+          return this.assigned;
         case 3:
-          return this.products.filter((item) => item.status === 2);
+          return this.completed;
         case 4:
-          return this.products;
+          return this.all;
+        default:
+          return [];
+      }
+    },
+    tableHeader() {
+      switch (this.activeTab) {
+        case 1:
+          return [
+            { text: "", value: "checkbox", sortable: false },
+            { text: "Index", value: "index", hide: true },
+            { text: "Item", value: "id" },
+            { text: "Description", value: "name" },
+            { text: "U/M", value: "um" },
+            { text: "Subtotal", value: "subtotal" },
+          ];
+        case 2:
+          return [
+            { text: "", value: "checkbox", sortable: false },
+            { text: "Index", value: "index", hide: true },
+            { text: "Item", value: "id" },
+            { text: "Description", value: "name" },
+            { text: "U/M", value: "um" },
+            { text: "Subtotal", value: "subtotal" },
+            { text: "Assignee", value: "assignee" },
+          ];
+        case 3:
+          return [
+            { text: "Index", value: "index", hide: true },
+            { text: "Item", value: "id" },
+            { text: "Description", value: "name" },
+            { text: "U/M", value: "um" },
+            { text: "Subtotal", value: "subtotal" },
+            { text: "Assignee", value: "assignee" },
+          ];
+        case 4:
+          return [
+            { text: "Index", value: "index", hide: true },
+            { text: "Item", value: "id" },
+            { text: "Description", value: "name" },
+            { text: "U/M", value: "um" },
+            { text: "Subtotal", value: "subtotal" },
+            { text: "Assignee", value: "assignee" },
+          ];
         default:
           return [];
       }
