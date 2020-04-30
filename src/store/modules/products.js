@@ -9,7 +9,10 @@ const state = {
       onhand: 112,
       status: 0, // 0待分配 1已分配 2待完成 3已完成
       assignee: "",
-      drivers: [{ name: "1200HB", box: "#36", stop: 1, qty: 1, consignee: "Ling" }],
+      drivers: [
+        { name: "1200HB", box: "#36", stop: 1, qty: 1, consignee: "Ling" },
+        { name: "1200JI", box: "#22", stop: 2, qty: 2, consignee: "Lulu" },
+      ],
     },
     {
       index: "2",
@@ -85,7 +88,8 @@ const state = {
       ],
     },
   ],
-  pickups: [],
+  working: false,
+  workingIds: [],
 };
 
 // getters
@@ -113,6 +117,28 @@ const mutations = {
       }
       return item;
     });
+  },
+  // 开始
+  start(state, ids) {
+    state.assigns.map((item) => {
+      if (ids.includes(item.id)) {
+        item.assignee = "TOM.L";
+      }
+      return item;
+    });
+    state.working = true;
+    state.workingIds = ids;
+  },
+  // 完成
+  finish(state) {
+    state.assigns.map((item) => {
+      if (state.workingIds.includes(item.id)) {
+        item.status = 2;
+      }
+      return item;
+    });
+    state.working = false;
+    state.workingIds = [];
   },
 };
 

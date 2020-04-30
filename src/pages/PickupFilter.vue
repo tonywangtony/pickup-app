@@ -36,6 +36,11 @@
 <script>
 export default {
   name: "PickupFilter",
+  created: function() {
+    if (this.$store.state.products.working) {
+      this.$router.push({ name: "pickup" });
+    }
+  },
   data() {
     return {
       selected: [],
