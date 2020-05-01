@@ -23,11 +23,18 @@
         </v-tabs>
       </v-col>
       <v-col>
-        <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details dense></v-text-field>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+          dense
+        ></v-text-field>
       </v-col>
     </v-row>
     <!-- tables -->
-    <v-data-table :headers="tableHeader" :items="tableData" :search="search" hide-default-footer>
+    <v-data-table :headers="headers" :items="items" :search="search" hide-default-footer>
       <template v-slot:item.checkbox="{ item }">
         <v-checkbox v-model="selected" :value="item.id"></v-checkbox>
       </template>
@@ -86,15 +93,26 @@ export default {
       return this.$store.state.products.assigns.filter((item) => item.status === 0);
     },
     assigned() {
-      return this.$store.state.products.assigns.filter((item) => item.status === 1);
+      return this.$store.state.products.assigns
+        .filter((item) => item.status === 1 || item.status === 2)
+        .map((item) => {
+          let doneTotal = 0;
+          item.drivers.forEach((driver) => {
+            if (driver.status === 1) {
+              doneTotal = doneTotal + driver.qty;
+            }
+          });
+          item.subtotal2 = `${doneTotal}/${item.subtotal}`;
+          return item;
+        });
     },
     completed() {
-      return this.$store.state.products.assigns.filter((item) => item.status === 2);
+      return this.$store.state.products.assigns.filter((item) => item.status === 3);
     },
     all() {
       return this.$store.state.products.assigns;
     },
-    tableData() {
+    items() {
       switch (this.activeTab) {
         case 1:
           return this.pending;
@@ -108,7 +126,7 @@ export default {
           return [];
       }
     },
-    tableHeader() {
+    headers() {
       switch (this.activeTab) {
         case 1:
           return [
@@ -126,7 +144,7 @@ export default {
             { text: "Item", value: "id" },
             { text: "Description", value: "name" },
             { text: "U/M", value: "um" },
-            { text: "Subtotal", value: "subtotal" },
+            { text: "Subtotal", value: "subtotal2" },
             { text: "Assignee", value: "assignee" },
           ];
         case 3:

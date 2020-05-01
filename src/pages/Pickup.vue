@@ -10,14 +10,15 @@
     <!-- tabs -->
     <v-tabs class="mt-1">
       <v-tab @click="switchTab(1)">Pending({{ tabSubtotal(1).length }})</v-tab>
-      <v-tab @click="switchTab(2)">Completed({{ tabSubtotal(2).length }})</v-tab>
-      <v-tab @click="switchTab(3)">All({{ tabSubtotal(3).length }})</v-tab>
+      <v-tab @click="switchTab(2)">Issue({{ tabSubtotal(2).length }})</v-tab>
+      <v-tab @click="switchTab(3)">Completed({{ tabSubtotal(3).length }})</v-tab>
+      <v-tab @click="switchTab(4)">All({{ tabSubtotal(4).length }})</v-tab>
     </v-tabs>
     <!-- tables -->
     <v-data-table :headers="headers" :items="desserts" item-key="key" hide-default-footer :items-per-page="100">
       <template v-slot:body="{ items }">
         <tbody>
-          <tr v-for="item in items" :key="item.key" :class="{ error: item.checkbox }">
+          <tr v-for="item in items" :key="item.key">
             <td v-if="activeTab === 1">
               <v-checkbox v-model="item.checkbox"></v-checkbox>
             </td>
@@ -28,7 +29,7 @@
               v-for="header in itemHeaders"
               :key="header.name"
               @click="item[header.bgKey] = !item[header.bgKey]"
-              :class="{ error: item[header.bgKey] && item[header.value] && activeTab === 1 }"
+              :class="{ error: (item[header.bgKey] || item.checkbox) && item[header.value] && activeTab === 1 }"
               style="text-align: center;"
             >
               {{ item[header.value] }}
@@ -37,7 +38,7 @@
           <tr>
             <th :colspan="activeTab === 1 ? 4 : 3">Subtotal</th>
             <th v-for="(header, key) in itemHeaders" :key="header.name" style="text-align: center;">
-              {{ itemSubtotal(key) }}
+              {{ driverSubtotal(key) }}
             </th>
           </tr>
         </tbody>
@@ -65,8 +66,6 @@ export default {
   data() {
     return {
       activeTab: 1,
-      isFalse: false,
-      selected: [],
       alert: {
         show: false,
         message: "",
@@ -74,47 +73,56 @@ export default {
     };
   },
   methods: {
+    // 切换tab
     switchTab(id) {
       this.activeTab = id;
     },
+    // 开始
     start() {
       if (this.$store.state.products.working) return;
       this.$store.commit("products/start", this.$route.params.selected);
     },
+    // 完成
     finish() {
       if (!this.$store.state.products.working) return;
-      let checkRes = true;
+      let issues = [];
+      let completeds = [];
       this.desserts.forEach((item) => {
-        if (item.checkbox === false) checkRes = false;
+        if (item.checkbox) {
+          completeds.push(item);
+        } else {
+          issues.push(item);
+        }
       });
-      if (checkRes) {
-        this.$store.commit("products/finish");
-      } else {
-        this.message("勾选所有司机才能完成");
-      }
+      this.$store.commit("products/finish", { completeds: completeds, issues: issues });
     },
-    message(message) {
+    // 显示提示框
+    showMessage(message) {
       this.alert.message = message;
       this.alert.show = true;
     },
-    getDetail(products) {
+    // 获取司机列表
+    getDrivers(products, status = [0, 1, 2]) {
       let drivers = [];
       let serial = 1;
       products.forEach((product, key) => {
         product.drivers.forEach((driver) => {
-          const keyName = `${driver.name}-${driver.stop}`;
-          const itemKey = "item" + key;
-          if (drivers[keyName] === undefined) {
-            drivers[keyName] = new Object();
-            drivers[keyName].index = serial;
-            serial++;
+          if (status.includes(driver.status)) {
+            const keyName = `${driver.name}-${driver.stop}`;
+            if (drivers[keyName] === undefined) {
+              drivers[keyName] = new Object();
+              drivers[keyName].productIds = [];
+              drivers[keyName].index = serial;
+              serial++;
+            }
+            drivers[keyName].key = `${product.id}-${driver.stop}`;
+            drivers[keyName].driverName = driver.name;
+            drivers[keyName].productIds.push(product.id);
+            drivers[keyName].stops = driver.stop;
+            drivers[keyName].checkbox = false;
+            drivers[keyName]["item" + key] = driver.qty;
+            drivers[keyName]["bg" + key] = false;
           }
-          drivers[keyName].key = `${product.id}-${driver.stop}`;
-          drivers[keyName].driverName = driver.name;
-          drivers[keyName].stops = driver.stop;
-          drivers[keyName][itemKey] = driver.qty;
-          drivers[keyName]["bg" + key] = false;
-          drivers[keyName].checkbox = false;
         });
       });
       drivers = Object.values(drivers);
@@ -128,8 +136,10 @@ export default {
         case 1:
           return this.pending;
         case 2:
-          return this.completed;
+          return this.issue;
         case 3:
+          return this.completed;
+        case 4:
           return this.all;
         default:
           return [];
@@ -161,13 +171,27 @@ export default {
       });
     },
     desserts() {
-      return this.getDetail(this.products);
+      switch (this.activeTab) {
+        case 1:
+          return this.getDrivers(this.products, [0]);
+        case 2:
+          return this.getDrivers(this.products, [2]);
+        case 3:
+          return this.getDrivers(this.products, [1]);
+        case 4:
+          return this.getDrivers(this.products);
+        default:
+          return [];
+      }
     },
     pending() {
-      return this.$store.state.products.assigns.filter((item) => item.status === 1 && item.assignee === "TOM.L");
+      return this.$store.state.products.assigns.filter((item) => item.assignee === "TOM.L");
+    },
+    issue() {
+      return this.$store.state.products.assigns.filter((item) => item.assignee === "TOM.L");
     },
     completed() {
-      return this.$store.state.products.assigns.filter((item) => item.status === 2 && item.assignee === "TOM.L");
+      return this.$store.state.products.assigns.filter((item) => item.assignee === "TOM.L");
     },
     all() {
       return this.$store.state.products.assigns.filter((item) => item.assignee === "TOM.L");
@@ -176,25 +200,26 @@ export default {
       return function(value) {
         switch (value) {
           case 1:
-            return this.getDetail(this.pending);
+            return this.getDrivers(this.pending, [0]);
           case 2:
-            return this.getDetail(this.completed);
+            return this.getDrivers(this.issue, [2]);
           case 3:
-            return this.getDetail(this.all);
+            return this.getDrivers(this.completed, [1]);
+          case 4:
+            return this.getDrivers(this.all);
           default:
             return [];
         }
       };
     },
-    itemSubtotal() {
+    driverSubtotal() {
       return function(value) {
+        let keyName = "item" + value;
         let subtotal = 0;
-        this.products.forEach((product, key) => {
-          product.drivers.forEach((driver) => {
-            if (key === value) {
-              subtotal += driver.qty;
-            }
-          });
+        this.desserts.forEach((driver) => {
+          if (driver[keyName] !== undefined) {
+            subtotal = subtotal + driver[keyName];
+          }
         });
         return subtotal;
       };
